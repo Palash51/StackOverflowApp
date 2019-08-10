@@ -13,3 +13,14 @@ class User(AbstractUser):
 
   def __str__(self):
     return self.email
+
+
+class MarkedUrl(models.Model):
+    """
+    model will hold marked url details
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    url = models.CharField(max_length=1500, verbose_name="Url")
+    marked = models.BooleanField(default=True, verbose_name="Is Marked")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

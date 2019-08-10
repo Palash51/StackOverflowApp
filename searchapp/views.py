@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from Stackexchange.response import api_response
 from helpers import get_timestamp
-from searchapp.models import User
+from searchapp.models import User, MarkedUrl
 from searchapp.serializers import SignupSerializer, StackOverflowQuestionSerializer
 from searchapp.stackexchange import get_stack_overflow_client
 
@@ -99,6 +99,17 @@ def signin(request):
         'data': user_data
     }
 
+@csrf_exempt
+@api_view(["GET", "POST"])
+@throttle_classes([])
+@permission_classes((IsAuthenticated,))
+@api_response
+def signout(request):
+    """user's session will be deleted"""
+    user = request.user
+    user.auth_token.delete()
+    return {'status': 1, "data": "You have successfully logged out"}
+
 
 
 class SearchView(APIView):
@@ -112,7 +123,7 @@ class SearchView(APIView):
 
     permission_classes = (IsAuthenticated,)
 
-    @method_decorator(cache_page(60 * 10))
+    # @method_decorator(cache_page(60 * 10))
     @api_response
     def get(self, request):
         try:
@@ -154,19 +165,25 @@ class SearchView(APIView):
 
 
 
+class MarkedLink(APIView):
+    """
+    user will mark the link as known
+    """
+    permission_classes = (IsAuthenticated,)
 
-@csrf_exempt
-@api_view(["GET", "POST"])
-@throttle_classes([])
-@permission_classes((IsAuthenticated,))
-@api_response
-def signout(request):
-    """user's session will be deleted"""
-    user = request.user
-    user.auth_token.delete()
-    return {'status': 1, "data": "You have successfully logged out"}
+    @api_response
+    def post(self, request):
+        """
+        :param request:
+        :return: users marked url
+        """
+        url = "https://stackoverflow.com/questions/4362586/sum-a-list-of-numbers-in-python"
+        new_mark = MarkedUrl.objects.create(
+            user=request.user,
+            url=request.data['url'],
+            marked=request.data['marked']
+        )
 
-
-
+        return {"status": 1, "data": "created"}
 
 
