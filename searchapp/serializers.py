@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from searchapp.models import User
+from searchapp.models import User, MarkedUrl
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -36,3 +36,22 @@ class SignupSerializer(serializers.ModelSerializer):
 class StackOverflowQuestionSerializer(serializers.Serializer):
     """get the json data for each query"""
     json = serializers.ReadOnlyField()
+
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """User model serializer"""
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", "email", "mobile_number")
+
+
+class MarkedUrlSerializer(serializers.ModelSerializer):
+    """serialize markedurl model"""
+
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = MarkedUrl
+        fields = "__all__"

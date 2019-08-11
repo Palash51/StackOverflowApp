@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from Stackexchange.response import api_response
 from helpers import get_timestamp
 from searchapp.models import User, MarkedUrl
-from searchapp.serializers import SignupSerializer, StackOverflowQuestionSerializer
+from searchapp.serializers import SignupSerializer, StackOverflowQuestionSerializer, MarkedUrlSerializer
 from searchapp.stackexchange import get_stack_overflow_client
 
 
@@ -171,14 +171,26 @@ class MarkedLink(APIView):
     """
     permission_classes = (IsAuthenticated,)
 
+
+    @api_response
+    def get(self, request):
+        """get the list of all the marked links"""
+
+        user = request.user
+        all_urls = MarkedUrl.objects.filter(user=user)
+        all_urls_serializer = MarkedUrlSerializer(all_urls, many=True).data
+
+        return {"status": 1, "data": all_urls_serializer}
+
+
     @api_response
     def post(self, request):
         """
         :param request:
         :return: users marked url
         """
-        url = "https://stackoverflow.com/questions/4362586/sum-a-list-of-numbers-in-python"
-        new_mark = MarkedUrl.objects.create(
+
+        new_mark = MarkedUrl.objects.get_or_create(
             user=request.user,
             url=request.data['url'],
             marked=request.data['marked']
