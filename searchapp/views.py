@@ -1,3 +1,5 @@
+import re
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
@@ -189,13 +191,19 @@ class MarkedLink(APIView):
         :param request:
         :return: users marked url
         """
+        url = request.data['url']
+        try:
+            question_id = [i for i in re.findall('\d+', url) if len(i) > 4][0]
+            if question_id:
+                new_mark = MarkedUrl.objects.get_or_create(
+                    user=request.user,
+                    url=request.data['url'],
+                    marked=request.data['marked']
+                )
+                return {"status": 1, "data": "created"}
+            return {"status": 0, "data": "Marked Url is not a stackoverflow url"}
 
-        new_mark = MarkedUrl.objects.get_or_create(
-            user=request.user,
-            url=request.data['url'],
-            marked=request.data['marked']
-        )
-
-        return {"status": 1, "data": "created"}
+        except Exception:
+            return {"status": 0, "data": "Marked Url is not a stackoverflow url"}
 
 

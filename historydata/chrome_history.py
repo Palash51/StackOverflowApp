@@ -19,7 +19,7 @@ con = sqlite3.connect(dst)
 c = con.cursor()
 query = "select url, title, visit_count, last_visit_time" \
         " from urls " \
-        "WHERE url LIKE '%stackoverflow%' " \
+        "WHERE url LIKE '%stackoverflow.com/questions%' " \
         "ORDER BY last_visit_time ASC;"
 
 c.execute(query)

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+import re
 
 # Create your models here.
 
@@ -24,3 +25,11 @@ class MarkedUrl(models.Model):
     marked = models.BooleanField(default=True, verbose_name="Is Marked")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        try:
+            question_id = [i for i in re.findall('\d+', self.url) if len(i) > 4][0]
+            return "Question ID: {0}".format(question_id)
+        except Exception:
+            return self.url
