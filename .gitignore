@@ -2,7 +2,6 @@
 *.pyc
 **/__pycache__/
 .idea/
-# C extensions
 *.so
 
 # Distribution / packaging
