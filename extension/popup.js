@@ -1,14 +1,22 @@
 function clickHandler(e) {
     // console.log(window.location.href);
     localStorage.setItem('token', "4202a4700931c79a244ce4fc23c661798f22ba66");
-    var test;
+    var current_url;
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
         console.log(tabs[0].url);
-        test = tabs[0].url
-        postData(test)
+        current_url = tabs[0].url
+
+        check_current_url = validate_url(current_url);
+        if (check_current_url)
+          {
+            postData(current_url)
+          }
+        else{
+          alert("Please mark only stackoverflow")
+        }
       });
     
-    // alert(localStorage.getItem('test'));
+    // alert(localStorage.getItem('current_url'));
     // window.close(); // Note: 
 }
 document.addEventListener('DOMContentLoaded', function() {
@@ -17,23 +25,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+function validate_url(current_url) {
 
-function postData(test) {
+  var matches = current_url.match(/(\d+)/); 
+              
+  if (matches) { 
+      var intValue = parseInt(current_url.match(/[0-9]+/)[0], 10); 
+      // alert(typeof(intValue))
+      var question_id = intValue.toString().length
+      if (question_id > 4) {
+        return true
+      }
+  }
+  return false 
+}
+
+
+function postData(current_url) {
   var xhr = new XMLHttpRequest();
     xhr.open("POST", "http://localhost:8000/v1/marked");
     var token = localStorage.getItem('token');
     xhr.setRequestHeader('Authorization', 'Token '  + token);
     xhr.setRequestHeader('Content-Type', 'application/json');
     // var current_url = window.location.href;
-    // console.log(test);
+    // console.log(current_url);
     body = {
-        "url" : test,
+        "url" : current_url,
         "marked" : true
     }
     // var token = "2edea0cda47b8fa115e6ca479a3cec1932c0175c"
     // xhr.setRequestHeader('Authorization', '2edea0cda47b8fa115e6ca479a3cec1932c0175c');
+    
     xhr.send(JSON.stringify(body));
-    alert(xhr)
+    alert("You have marked url!!")
     window.close();
 }
 
