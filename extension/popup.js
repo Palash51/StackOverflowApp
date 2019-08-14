@@ -1,6 +1,6 @@
 function clickHandler(e) {
     // console.log(window.location.href);
-    localStorage.setItem('token', "4202a4700931c79a244ce4fc23c661798f22ba66");
+    // localStorage.setItem('token', "4202a4700931c79a244ce4fc23c661798f22ba66");
     var current_url;
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
         console.log(tabs[0].url);
@@ -27,15 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function validate_url(current_url) {
 
+  if (current_url.includes("stackoverflow.com/questions")) {
+
   var matches = current_url.match(/(\d+)/); 
               
-  if (matches) { 
-      var intValue = parseInt(current_url.match(/[0-9]+/)[0], 10); 
-      // alert(typeof(intValue))
-      var question_id = intValue.toString().length
-      if (question_id > 4) {
-        return true
-      }
+    if (matches) { 
+        var intValue = parseInt(current_url.match(/[0-9]+/)[0], 10); 
+        // alert(typeof(intValue))
+        var question_id = intValue.toString().length
+        if (question_id > 4) {
+          return true
+        }
+    }
   }
   return false 
 }
@@ -43,7 +46,7 @@ function validate_url(current_url) {
 
 function postData(current_url) {
   var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:8000/v1/marked");
+    xhr.open("POST", "https://97ea7b58.ngrok.io/v1/marked");
     var token = localStorage.getItem('token');
     xhr.setRequestHeader('Authorization', 'Token '  + token);
     xhr.setRequestHeader('Content-Type', 'application/json');

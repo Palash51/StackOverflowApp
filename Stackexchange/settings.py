@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-from decouple import config
+from decouple import config, Csv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +26,7 @@ SECRET_KEY = 'dkss9^-$!-ae(%!n9k=*^ct5at8&q)2y_f(c9c6r)mwrr7k7m4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     'searchapp',
     'history',
 ]
@@ -77,6 +78,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    #'Stackexchange.middlewares.LoggedInUserMiddleware'
 ]
 
 ROOT_URLCONF = 'Stackexchange.urls'
@@ -135,21 +138,21 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
     ),
-    'DEFAULT_THROTTLE_CLASSES': [
-            'searchapp.throttles.BurstRateThrottle',
-            'searchapp.throttles.SustainedRateThrottle',
-            # 'searchapp.throttles.limitedRateThrottle'
-        ],
-    'DEFAULT_THROTTLE_RATES': {
-             'burst': '5/min',
-             'sustained': '100/day',
-
-        },
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #         'searchapp.throttles.BurstRateThrottle',
+    #         'searchapp.throttles.SustainedRateThrottle',
+    #         # 'searchapp.throttles.limitedRateThrottle'
+    #     ],
+    # 'DEFAULT_THROTTLE_RATES': {
+    #          'burst': '5/min',
+    #          'sustained': '100/day',
+    #
+    #     },
     'EXCEPTION_HANDLER': 'Stackexchange.response.sg_exception_handler',
 
     'DATETIME_FORMAT': "%m-%d-%YT%H:%M",
@@ -157,6 +160,18 @@ REST_FRAMEWORK = {
 }
 
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        },
+        "KEY_PREFIX": "example"
+    }
+}
+
+CACHE_TTL = 60 * 60 * 24
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -182,7 +197,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 

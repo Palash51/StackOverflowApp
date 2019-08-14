@@ -10,13 +10,18 @@ from rest_framework.decorators import api_view, permission_classes, throttle_cla
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-
+from django.conf import settings
 from Stackexchange.response import api_response
-from helpers import get_timestamp
+from helpers import get_timestamp, get_logged_user
+from scripts.chrome_history import update_user_history
 from searchapp.models import User, MarkedUrl
 from searchapp.serializers import SignupSerializer, StackOverflowQuestionSerializer, MarkedUrlSerializer
 from searchapp.stackexchange import get_stack_overflow_client
+from django.contrib.sessions.models import Session
+from django.core.cache import cache
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 class Signup(APIView):
     """
@@ -88,6 +93,11 @@ def signin(request):
     user.save()
 
     token, _ = Token.objects.get_or_create(user=user)
+    cache.set("SE_token", token.key, timeout=CACHE_TTL)
+    print(cache.keys('*'))
+
+    update_user_history(user)
+
     user_data = {
         'token': token.key,
         'user': user.username,
@@ -110,6 +120,8 @@ def signout(request):
     """user's session will be deleted"""
     user = request.user
     user.auth_token.delete()
+    request.session.delete()
+    cache.delete('SE_token')
     return {'status': 1, "data": "You have successfully logged out"}
 
 
@@ -171,7 +183,7 @@ class MarkedLink(APIView):
     """
     user will mark the link as known
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
 
     @api_response
@@ -192,11 +204,12 @@ class MarkedLink(APIView):
         :return: users marked url
         """
         url = request.data['url']
+        user = get_logged_user()
         try:
             question_id = [i for i in re.findall('\d+', url) if len(i) > 4][0]
             if question_id:
                 new_mark = MarkedUrl.objects.get_or_create(
-                    user=request.user,
+                    user=user,
                     url=request.data['url'],
                     marked=request.data['marked']
                 )
