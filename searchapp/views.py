@@ -190,11 +190,14 @@ class MarkedLink(APIView):
     def get(self, request):
         """get the list of all the marked links"""
 
-        user = request.user
+        user = get_logged_user()
         all_urls = MarkedUrl.objects.filter(user=user)
-        all_urls_serializer = MarkedUrlSerializer(all_urls, many=True).data
+        serializer_context = {
+            'request': request,
+        }
+        data = MarkedUrlSerializer(all_urls, context=serializer_context, many=True).data
 
-        return {"status": 1, "data": all_urls_serializer}
+        return {"status": 1, "data": data}
 
 
     @api_response

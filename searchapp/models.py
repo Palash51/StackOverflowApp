@@ -33,3 +33,7 @@ class MarkedUrl(models.Model):
             return "Question ID: {0}".format(question_id)
         except Exception:
             return self.url
+
+    @property
+    def get_created_at_time_formate(self):
+        return self.created_at.strftime('%d-%m-%Y')

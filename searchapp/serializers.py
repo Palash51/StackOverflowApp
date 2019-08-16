@@ -51,6 +51,8 @@ class MarkedUrlSerializer(serializers.ModelSerializer):
     """serialize markedurl model"""
 
     user = UserSerializer(read_only=True)
+    created_at = serializers.ReadOnlyField(source=('get_created_at_time_formate'))
+    # url = serializers.HyperlinkedIdentityField(view_name='marked', read_only=True)
 
     class Meta:
         model = MarkedUrl
