@@ -211,10 +211,14 @@ class MarkedLink(APIView):
         try:
             question_id = [i for i in re.findall('\d+', url) if len(i) > 4][0]
             if question_id:
+                stack_overflow = get_stack_overflow_client()
+                question = stack_overflow.questions(question_id)
+                question_title = question.items[0].title
                 new_mark = MarkedUrl.objects.get_or_create(
                     user=user,
                     url=request.data['url'],
-                    marked=request.data['marked']
+                    marked=request.data['marked'],
+                    title=question_title
                 )
                 return {"status": 1, "data": "created"}
             return {"status": 0, "data": "Marked Url is not a stackoverflow url"}

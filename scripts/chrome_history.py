@@ -6,7 +6,7 @@ from shutil import copyfile
 import sqlite3
 from pathlib import Path
 
-from helpers import get_time_date
+
 
 sys.path.append("/home/palash/Desktop/palash/Stackexchange/")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Stackexchange.settings")
@@ -15,8 +15,8 @@ django.setup()
 # from Stackexchange.middlewares import LoggedInUserMiddleware
 # request = LoggedInUserMiddleware(get_response=None)
 
-from history.models import UserHistory
-
+from history.models import UserHistory, BrowsedUrlDetail
+from helpers import get_time_date
 
 def update_user_history(user):
     """udate user history data"""
@@ -38,6 +38,7 @@ def update_user_history(user):
             "WHERE url LIKE '%stackoverflow.com/questions%' " \
             "ORDER BY last_visit_time ASC;"
 
+
     c.execute(query)
     results = c.fetchall()
 
@@ -57,4 +58,36 @@ def update_user_history(user):
                 visit_count=r[2],
                 last_visit_time=visit_time
             )
-    print("updated!!")
+    print("updated stackoverflow urls!!")
+
+    all_sites = "select url, title, visit_count, last_visit_time from urls"
+    c.execute(all_sites)
+    total_sites = c.fetchall()
+
+    for site in total_sites:
+        if len(site[0]) < 5000:
+            try:
+
+                user_history = BrowsedUrlDetail.objects.get(
+                    user=user,
+                    site=site[0]
+                )
+            except Exception:
+                visit_time = get_time_date(site[3])
+                user_history = BrowsedUrlDetail.objects.create(
+                    user=user,
+                    site=site[0],
+                    site_title=site[1],
+                    site_count=site[2],
+                    last_visit_time=visit_time
+                )
+
+    print("Updated all browsed urls!!")
+
+
+
+
+# if __name__ == "__main__":
+
+
+

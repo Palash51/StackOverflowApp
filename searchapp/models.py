@@ -22,6 +22,7 @@ class MarkedUrl(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     url = models.CharField(max_length=1500, verbose_name="Url")
+    title = models.CharField(max_length=1500, null=True, blank=True)
     marked = models.BooleanField(default=True, verbose_name="Is Marked")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
