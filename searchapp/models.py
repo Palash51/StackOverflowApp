@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import re
-
+from history.search import MarkedUrlIndex
 # Create your models here.
 
 
@@ -38,3 +38,15 @@ class MarkedUrl(models.Model):
     @property
     def get_created_at_time_formate(self):
         return self.created_at.strftime('%d-%m-%Y')
+
+    def indexing(self):
+        obj = MarkedUrlIndex(
+            meta={'id': self.id},
+            user=self.user.username,
+            url=self.url,
+            title=self.title,
+            created_at=self.created_at,
+
+        )
+        obj.save()
+        return obj.to_dict(include_meta=True)

@@ -191,7 +191,7 @@ class MarkedLink(APIView):
         """get the list of all the marked links"""
 
         user = get_logged_user()
-        all_urls = MarkedUrl.objects.filter(user=user)
+        all_urls = MarkedUrl.objects.filter(user=user).order_by('created_at')
         serializer_context = {
             'request': request,
         }

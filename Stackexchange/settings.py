@@ -192,6 +192,34 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+ELASTICSEARCH = {
+        "serviceProvider": "elasticsearch",
+        "host": "localhost",
+        "protocol": "http",
+        "port": 9200,
+        "log": ["error", "warning"],
+        "version": "7.0.0",
+        "refreshInterval": "2m",
+        "index" : "marked-ur",
+        "new_index" : "marked-ur",
+        "searchIndex": "search_active",
+        "portalIndex": "portal_active",
+        "requestTimeout": 60000,
+        "requestTimeoutSearch": 60000,
+        "requestTimeoutTimeWidget": 60000,
+        "requestTimeoutAutoSuggest": 5000,
+        "scrollTimeout": "2m"
+}
+
+
+KIBANA = {
+    "host": "localhost",
+    "port": 5601
+}
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
