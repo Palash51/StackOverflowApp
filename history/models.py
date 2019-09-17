@@ -5,7 +5,7 @@ from searchapp.models import User
 
 
 class UserHistory(models.Model):
-    """model to have user history"""
+    """model to have user history only stackoverflow data"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     url = models.CharField(max_length=1500, verbose_name="Url")
     title = models.CharField(max_length=1500, verbose_name="title")
