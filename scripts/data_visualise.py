@@ -2,10 +2,6 @@ import json
 import os
 import sys
 import django
-from django.conf import settings
-from shutil import copyfile
-import sqlite3
-from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -45,6 +41,7 @@ def get_month_wise_plot():
     ax = fig.add_subplot(111)
     plt.xlabel('Months', fontweight="bold")
     plt.ylabel('Total number of site visits', fontweight="bold")
+    ax.set_title('Monthly Plot')
     plt.plot_date(df['month'], df['total_views'], '-o')
     for xy in zip(df['month'], df['total_views']):
         ax.annotate('(%s, %s)' % xy, xy=xy, textcoords='data', fontweight="bold")
@@ -68,8 +65,8 @@ def top_three_visited_sites():
 
 
 if __name__ == "__main__":
-    top_three_visited_sites()
-    # get_month_wise_plot()
+    # top_three_visited_sites()
+    get_month_wise_plot()
     # get_pie_chart()
 
 
