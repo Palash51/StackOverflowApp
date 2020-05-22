@@ -1,8 +1,8 @@
 from stackauth import StackAuth
 from stackexchange import Site, StackOverflow
 
-user_id = '5913966'
-STACKOVERFLOW_KEY = 'to6)k4L5p95YPP1adL4PqQ(('
+user_id = '#####'
+STACKOVERFLOW_KEY = '###############'
 
 
 def get_stack_overflow_client():
